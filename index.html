@@ -17,13 +17,16 @@
         <div class="mb-6">
             <label class="block text-xs font-bold text-pink-400 uppercase mb-2 tracking-wider">Alamat Email Anda:</label>
             <div class="flex gap-2 mb-3">
-                <input type="text" id="targetEmail" readonly class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-cyan-300 font-mono text-sm focus:outline-none">
+                <!-- Kolom Input Email (bisa diedit jika pakai mode custom) -->
+                <input type="text" id="targetEmail" readonly class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-cyan-300 font-mono text-sm focus:outline-none focus:border-pink-500">
                 <button onclick="copyEmail()" id="copyEmailBtn" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition shadow-lg shadow-blue-500/20 whitespace-nowrap">Salin</button>
             </div>
-            <!-- Tombol Pilihan Generator: Nama & String -->
+            
+            <!-- Tombol Pilihan Generator: Nama, String, & Custom -->
             <div class="flex gap-2">
                 <button onclick="generateEmail('name')" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-2 rounded-lg text-sm transition shadow-lg shadow-purple-500/20">👤 Nama</button>
                 <button onclick="generateEmail('string')" class="flex-1 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-semibold py-2 rounded-lg text-sm transition shadow-lg shadow-cyan-500/20">🔣 String</button>
+                <button onclick="enableCustomEmail()" class="flex-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold py-2 rounded-lg text-sm transition shadow-lg shadow-amber-500/20">✏️ Custom</button>
             </div>
         </div>
 
@@ -60,6 +63,9 @@
 
         // Generator tipe: 'name' atau 'string'
         function generateEmail(type) {
+            const emailInput = document.getElementById("targetEmail");
+            emailInput.readOnly = true;
+
             let prefix = "";
             if (type === 'name') {
                 const randomName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -70,10 +76,30 @@
             }
 
             currentEmail = `${prefix}@${DOMAIN}`;
-            document.getElementById("targetEmail").value = currentEmail;
+            emailInput.value = currentEmail;
             document.getElementById("inboxList").innerHTML = `<p class="text-sm text-slate-500 text-center py-6">Belum ada email masuk...</p>`;
             
             fetchInbox();
+        }
+
+        // Mengaktifkan mode input custom untuk memasukkan email lama
+        function enableCustomEmail() {
+            const emailInput = document.getElementById("targetEmail");
+            emailInput.readOnly = false;
+            emailInput.focus();
+            emailInput.select();
+            
+            // Berikan pemberitahuan kecil di kotak inbox
+            document.getElementById("inboxList").innerHTML = `
+                <div class="text-center py-4">
+                    <p class="text-xs text-amber-400 mb-2 font-semibold">Silakan ketik email lama Anda di atas, lalu klik tombol "Cek Pesan Baru"</p>
+                </div>
+            `;
+
+            // Ketika pengguna mengetik, update nilai currentEmail secara real-time
+            emailInput.oninput = function() {
+                currentEmail = emailInput.value.trim();
+            };
         }
 
         // Menyalin email tanpa Pop-up alert
@@ -94,16 +120,12 @@
             }, 1500);
         }
 
-        // Fungsi khusus mengekstrak dan menyalin HANYA KODE (angka/kodenya saja) dari subjek atau isi pesan
+        // Fungsi khusus menyalin kode verifikasi
         function copyVerificationCode(subject, body, buttonElement) {
-            // Gabungkan subjek dan body untuk mendeteksi angka/kode verifikasi (misal: 4-6 digit angka)
             let combinedText = subject + " " + body;
-            
-            // Mencari pola angka 4 sampai 8 digit yang biasanya menjadi kode verifikasi
             let match = combinedText.match(/\b\d{4,8}\b/);
             let codeToCopy = match ? match[0] : "";
 
-            // Jika tidak ketemu pola angka, ambil kata pertama atau fallback ke body
             if (!codeToCopy) {
                 codeToCopy = body.trim();
             }
@@ -122,7 +144,14 @@
 
         // Mengambil pesan dari Supabase
         async function fetchInbox() {
-            if (!currentEmail) return;
+            const emailInput = document.getElementById("targetEmail");
+            currentEmail = emailInput.value.trim();
+
+            if (!currentEmail) {
+                alert("Masukkan alamat email terlebih dahulu!");
+                return;
+            }
+
             const btn = document.getElementById("refreshBtn");
             btn.innerText = "Memeriksa...";
 
@@ -146,7 +175,6 @@
                         let item = document.createElement("div");
                         item.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-md mb-2";
                         
-                        // Encode subjek dan body agar aman dimasukkan ke parameter fungsi
                         let encodedSubject = encodeURIComponent(msg.subject || "");
                         let encodedBody = encodeURIComponent(msg.body || "");
 
