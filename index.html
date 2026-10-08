@@ -3,57 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inbox Email Domain Pribadi</title>
+    <title>email sakti</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
     <div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-xl">
         <h1 class="text-2xl font-bold text-slate-800 mb-2 text-center">Inbox Domain josjisbos.my.id</h1>
-        <p class="text-sm text-slate-500 mb-6 text-center">Masukkan alamat email lengkap Anda di domain ini untuk mengecek pesan masuk.</p>
+        <p class="text-sm text-slate-500 mb-6 text-center">Gunakan atau buat alamat email acak untuk domain Anda.</p>
 
-        <!-- Bagian Input Alamat Email -->
+        <!-- Bagian Alamat Email & Tombol Generate -->
         <div class="mb-6">
-            <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Alamat Email Tujuan:</label>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Alamat Email Anda:</label>
             <div class="flex gap-2">
-                <input type="text" id="targetEmail" placeholder="contoh: admin@josjisbos.my.id" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2 text-slate-700 font-mono text-sm focus:outline-none">
-                <button onclick="fetchInbox()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition">Cek</button>
+                <input type="text" id="targetEmail" readonly class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2 text-slate-700 font-mono text-sm focus:outline-none">
+                <button onclick="copyEmail()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition">Salin</button>
+                <button onclick="generateEmail()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm transition" title="Ganti Email Acak">🔄</button>
             </div>
         </div>
 
         <!-- Tombol Refresh & Status -->
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-lg font-semibold text-slate-700">Kotak Masuk (Inbox)</h2>
-            <button onclick="fetchInbox()" id="refreshBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">Refresh</button>
+            <button onclick="fetchInbox()" id="refreshBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">Cek Pesan Baru</button>
         </div>
 
         <!-- Daftar Pesan Masuk -->
         <div id="inboxList" class="space-y-3 max-h-60 overflow-y-auto mb-4 border border-slate-200 rounded-lg p-3 bg-slate-50">
-            <p class="text-sm text-slate-400 text-center py-6">Masukkan alamat email di atas lalu klik Cek...</p>
+            <p class="text-sm text-slate-400 text-center py-6">Belum ada email masuk...</p>
         </div>
     </div>
 
-    <!-- JavaScript untuk koneksi ke Supabase -->
+    <!-- JavaScript untuk logika aplikasi & Supabase -->
     <script>
-        // KREDENSIAL SUPABASE ANDA
         const SUPABASE_URL = "https://leozcdtoagbxuhefypjh.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxlb3pjZHRvYWdieHVoZWZ5cGpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NTI3OTUsImV4cCI6MjEwNzAyODc5NX0.W8Gm7H-lQ9CbcvhiZXjV6RK1uNbrKMRgrwDdtda5dgI";
 
-        async function fetchInbox() {
-            const email = document.getElementById("targetEmail").value.trim();
-            if (!email) {
-                alert("Masukkan alamat email terlebih dahulu!");
-                return;
-            }
+        const DOMAIN = "josjisbos.my.id";
+        let currentEmail = "";
 
+        function generateRandomString(length) {
+            const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            let result = "";
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        // Membuat email acak baru menggunakan domain Anda
+        function generateEmail() {
+            const randomName = generateRandomString(8);
+            currentEmail = `${randomName}@${DOMAIN}`;
+            
+            document.getElementById("targetEmail").value = currentEmail;
+            document.getElementById("inboxList").innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Belum ada email masuk...</p>`;
+            
+            // Otomatis cek inbox untuk email baru tersebut
+            fetchInbox();
+        }
+
+        // Menyalin email ke clipboard
+        function copyEmail() {
+            const emailInput = document.getElementById("targetEmail");
+            emailInput.select();
+            navigator.clipboard.writeText(emailInput.value);
+            alert("Email berhasil disalin!");
+        }
+
+        // Mengecek pesan dari database Supabase
+        async function fetchInbox() {
+            if (!currentEmail) return;
             const btn = document.getElementById("refreshBtn");
             btn.innerText = "Memeriksa...";
 
             let inboxList = document.getElementById("inboxList");
-            inboxList.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Memuat pesan...</p>`;
 
             try {
-                let response = await fetch(`${SUPABASE_URL}/rest/v1/emails?recipient=eq.${email}&order=created_at.desc`, {
+                let response = await fetch(`${SUPABASE_URL}/rest/v1/emails?recipient=eq.${currentEmail}&order=created_at.desc`, {
                     headers: {
                         "apikey": SUPABASE_ANON_KEY,
                         "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
@@ -64,7 +91,7 @@
                 inboxList.innerHTML = "";
 
                 if (messages.length === 0) {
-                    inboxList.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Belum ada email masuk untuk ${email}</p>`;
+                    inboxList.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Belum ada email masuk untuk ${currentEmail}</p>`;
                 } else {
                     messages.forEach(msg => {
                         let item = document.createElement("div");
@@ -80,11 +107,17 @@
                 }
             } catch (error) {
                 console.error("Gagal mengambil data:", error);
-                inboxList.innerHTML = `<p class="text-sm text-red-400 text-center py-6">Gagal memuat pesan dari database.</p>`;
+                inboxList.innerHTML = `<p class="text-sm text-red-400 text-center py-6">Gagal memuat pesan.</p>`;
             } finally {
-                btn.innerText = "Refresh";
+                btn.innerText = "Cek Pesan Baru";
             }
         }
+
+        // Generate email saat pertama kali dibuka
+        window.onload = generateEmail;
+
+        // Otomatis cek pesan baru setiap 10 detik
+        setInterval(fetchInbox, 10000);
     </script>
 </body>
 </html>
