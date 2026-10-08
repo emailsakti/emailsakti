@@ -3,44 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>email sakti</title>
+    <title>Email Sakti</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="bg-white shadow-xl rounded-2xl p-6 w-full max-w-xl">
-        <h1 class="text-2xl font-bold text-slate-800 mb-2 text-center">Inbox Domain josjisbos.my.id</h1>
-        <p class="text-sm text-slate-500 mb-6 text-center">Gunakan atau buat alamat email acak untuk domain Anda.</p>
+    <div class="bg-slate-900 border border-slate-800 shadow-2xl shadow-purple-500/10 rounded-2xl p-6 w-full max-w-xl">
+        <!-- Judul Header -->
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-400 mb-1 text-center tracking-wide">EMAIL SAKTI</h1>
+        <p class="text-xs text-slate-400 mb-6 text-center">Layanan kotak masuk domain <span class="text-cyan-400 font-mono">josjisbos.my.id</span></p>
 
-        <!-- Bagian Alamat Email & Tombol Generate -->
+        <!-- Bagian Alamat Email -->
         <div class="mb-6">
-            <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Alamat Email Anda:</label>
+            <label class="block text-xs font-bold text-pink-400 uppercase mb-2 tracking-wider">Alamat Email Anda:</label>
+            <div class="flex gap-2 mb-3">
+                <input type="text" id="targetEmail" readonly class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-cyan-300 font-mono text-sm focus:outline-none">
+                <button onclick="copyEmail()" id="copyEmailBtn" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition shadow-lg shadow-blue-500/20 whitespace-nowrap">Salin</button>
+            </div>
+            <!-- Tombol Pilihan Generator: Nama & String -->
             <div class="flex gap-2">
-                <input type="text" id="targetEmail" readonly class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2 text-slate-700 font-mono text-sm focus:outline-none">
-                <button onclick="copyEmail()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition">Salin</button>
-                <button onclick="generateEmail()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm transition" title="Ganti Email Acak">🔄</button>
+                <button onclick="generateEmail('name')" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-2 rounded-lg text-sm transition shadow-lg shadow-purple-500/20">👤 Nama</button>
+                <button onclick="generateEmail('string')" class="flex-1 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-semibold py-2 rounded-lg text-sm transition shadow-lg shadow-cyan-500/20">🔣 String</button>
             </div>
         </div>
 
         <!-- Tombol Refresh & Status -->
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold text-slate-700">Kotak Masuk (Inbox)</h2>
-            <button onclick="fetchInbox()" id="refreshBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">Cek Pesan Baru</button>
+        <div class="flex justify-between items-center mb-4 border-t border-slate-800 pt-4">
+            <h2 class="text-md font-bold text-yellow-400">Kotak Masuk (Inbox)</h2>
+            <button onclick="fetchInbox()" id="refreshBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition shadow-md shadow-emerald-600/20">Cek Pesan Baru</button>
         </div>
 
         <!-- Daftar Pesan Masuk -->
-        <div id="inboxList" class="space-y-3 max-h-60 overflow-y-auto mb-4 border border-slate-200 rounded-lg p-3 bg-slate-50">
-            <p class="text-sm text-slate-400 text-center py-6">Belum ada email masuk...</p>
+        <div id="inboxList" class="space-y-3 max-h-72 overflow-y-auto mb-2 border border-slate-800 rounded-lg p-3 bg-slate-950/50">
+            <p class="text-sm text-slate-500 text-center py-6">Belum ada email masuk...</p>
         </div>
     </div>
 
-    <!-- JavaScript untuk logika aplikasi & Supabase -->
+    <!-- JavaScript Logika -->
     <script>
         const SUPABASE_URL = "https://leozcdtoagbxuhefypjh.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxlb3pjZHRvYWdieHVoZWZ5cGpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NTI3OTUsImV4cCI6MjEwNzAyODc5NX0.W8Gm7H-lQ9CbcvhiZXjV6RK1uNbrKMRgrwDdtda5dgI";
 
         const DOMAIN = "josjisbos.my.id";
         let currentEmail = "";
+
+        const firstNames = ["budi", "siti", "joko", "dewi", "agus", "ani", "eko", "sri", "rizky", "putri", "bayu", "indah", "dimas", "fitri"];
 
         function generateRandomString(length) {
             const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -51,27 +58,57 @@
             return result;
         }
 
-        // Membuat email acak baru menggunakan domain Anda
-        function generateEmail() {
-            const randomName = generateRandomString(8);
-            currentEmail = `${randomName}@${DOMAIN}`;
-            
+        // Generator tipe: 'name' (Nama + Angka) atau 'string' (Huruf Angka Acak)
+        function generateEmail(type) {
+            let prefix = "";
+            if (type === 'name') {
+                const randomName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const randomNum = Math.floor(Math.random() * 900) + 100; // Angka 3 digit
+                prefix = `${randomName}${randomNum}`;
+            } else {
+                prefix = generateRandomString(8);
+            }
+
+            currentEmail = `${prefix}@${DOMAIN}`;
             document.getElementById("targetEmail").value = currentEmail;
-            document.getElementById("inboxList").innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Belum ada email masuk...</p>`;
+            document.getElementById("inboxList").innerHTML = `<p class="text-sm text-slate-500 text-center py-6">Belum ada email masuk...</p>`;
             
-            // Otomatis cek inbox untuk email baru tersebut
             fetchInbox();
         }
 
-        // Menyalin email ke clipboard
+        // Menyalin email tanpa Pop-up alert (mengubah teks tombol sementara)
         function copyEmail() {
             const emailInput = document.getElementById("targetEmail");
-            emailInput.select();
             navigator.clipboard.writeText(emailInput.value);
-            alert("Email berhasil disalin!");
+            
+            const btn = document.getElementById("copyEmailBtn");
+            const originalText = btn.innerText;
+            btn.innerText = "Tersalin!";
+            btn.classList.replace("from-blue-600", "from-emerald-600");
+            btn.classList.replace("to-indigo-600", "to-teal-600");
+
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.replace("from-emerald-600", "from-blue-600");
+                btn.classList.replace("to-teal-600", "to-indigo-600");
+            }, 1500);
         }
 
-        // Mengecek pesan dari database Supabase
+        // Menyalin isi pesan / kode verifikasi tanpa pop-up alert
+        function copyMessageContent(textToCopy, buttonElement) {
+            navigator.clipboard.writeText(textToCopy);
+            
+            const originalText = buttonElement.innerText;
+            buttonElement.innerText = "Tersalin!";
+            buttonElement.className = "bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded transition";
+
+            setTimeout(() => {
+                buttonElement.innerText = originalText;
+                buttonElement.className = "bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-2.5 py-1 rounded transition shadow-sm";
+            }, 1500);
+        }
+
+        // Mengambil pesan dari Supabase
         async function fetchInbox() {
             if (!currentEmail) return;
             const btn = document.getElementById("refreshBtn");
@@ -91,16 +128,23 @@
                 inboxList.innerHTML = "";
 
                 if (messages.length === 0) {
-                    inboxList.innerHTML = `<p class="text-sm text-slate-400 text-center py-6">Belum ada email masuk untuk ${currentEmail}</p>`;
+                    inboxList.innerHTML = `<p class="text-sm text-slate-500 text-center py-6">Belum ada email masuk untuk ${currentEmail}</p>`;
                 } else {
-                    messages.forEach(msg => {
+                    messages.forEach((msg, index) => {
                         let item = document.createElement("div");
-                        item.className = "bg-white border border-slate-200 p-3 rounded-lg shadow-sm";
+                        item.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-md";
+                        
+                        // Escape isi body agar aman dimasukkan ke fungsi salin
+                        let safeBody = msg.body.replace(/'/g, "\\'");
+
                         item.innerHTML = `
-                            <p class="font-semibold text-slate-800 text-sm">Dari: ${msg.sender}</p>
-                            <p class="text-xs font-bold text-blue-600 mb-1">Subjek: ${msg.subject}</p>
-                            <pre class="text-xs text-slate-600 bg-slate-50 p-2 rounded whitespace-pre-wrap font-sans">${msg.body}</pre>
-                            <p class="text-[10px] text-slate-400 mt-1 text-right">${new Date(msg.created_at).toLocaleString()}</p>
+                            <div class="flex justify-between items-start mb-1">
+                                <p class="font-bold text-pink-400 text-xs">Dari: ${msg.sender}</p>
+                                <button onclick="copyMessageContent('${safeBody}', this)" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-2.5 py-1 rounded transition shadow-sm">Salin Isi</button>
+                            </div>
+                            <p class="text-xs font-semibold text-yellow-300 mb-1">Subjek: ${msg.subject}</p>
+                            <pre class="text-xs text-slate-300 bg-slate-950 p-2.5 rounded border border-slate-800 whitespace-pre-wrap font-sans my-1">${msg.body}</pre>
+                            <p class="text-[10px] text-slate-500 text-right mt-1">${new Date(msg.created_at).toLocaleString()}</p>
                         `;
                         inboxList.appendChild(item);
                     });
@@ -113,10 +157,10 @@
             }
         }
 
-        // Generate email saat pertama kali dibuka
-        window.onload = generateEmail;
+        // Generate email default (tipe string) saat pertama kali halaman dibuka
+        window.onload = () => generateEmail('string');
 
-        // Otomatis cek pesan baru setiap 10 detik
+        // Auto-refresh cek inbox setiap 10 detik
         setInterval(fetchInbox, 10000);
     </script>
 </body>
