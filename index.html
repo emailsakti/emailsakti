@@ -58,12 +58,12 @@
             return result;
         }
 
-        // Generator tipe: 'name' (Nama + Angka) atau 'string' (Huruf Angka Acak)
+        // Generator tipe: 'name' atau 'string'
         function generateEmail(type) {
             let prefix = "";
             if (type === 'name') {
                 const randomName = firstNames[Math.floor(Math.random() * firstNames.length)];
-                const randomNum = Math.floor(Math.random() * 900) + 100; // Angka 3 digit
+                const randomNum = Math.floor(Math.random() * 900) + 100;
                 prefix = `${randomName}${randomNum}`;
             } else {
                 prefix = generateRandomString(8);
@@ -76,7 +76,7 @@
             fetchInbox();
         }
 
-        // Menyalin email tanpa Pop-up alert (mengubah teks tombol sementara)
+        // Menyalin email tanpa Pop-up alert
         function copyEmail() {
             const emailInput = document.getElementById("targetEmail");
             navigator.clipboard.writeText(emailInput.value);
@@ -94,17 +94,29 @@
             }, 1500);
         }
 
-        // Menyalin isi pesan / kode verifikasi tanpa pop-up alert
-        function copyMessageContent(textToCopy, buttonElement) {
-            navigator.clipboard.writeText(textToCopy);
+        // Fungsi khusus mengekstrak dan menyalin HANYA KODE (angka/kodenya saja) dari subjek atau isi pesan
+        function copyVerificationCode(subject, body, buttonElement) {
+            // Gabungkan subjek dan body untuk mendeteksi angka/kode verifikasi (misal: 4-6 digit angka)
+            let combinedText = subject + " " + body;
+            
+            // Mencari pola angka 4 sampai 8 digit yang biasanya menjadi kode verifikasi
+            let match = combinedText.match(/\b\d{4,8}\b/);
+            let codeToCopy = match ? match[0] : "";
+
+            // Jika tidak ketemu pola angka, ambil kata pertama atau fallback ke body
+            if (!codeToCopy) {
+                codeToCopy = body.trim();
+            }
+
+            navigator.clipboard.writeText(codeToCopy);
             
             const originalText = buttonElement.innerText;
-            buttonElement.innerText = "Tersalin!";
+            buttonElement.innerText = "Kode Tersalin!";
             buttonElement.className = "bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded transition";
 
             setTimeout(() => {
                 buttonElement.innerText = originalText;
-                buttonElement.className = "bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-2.5 py-1 rounded transition shadow-sm";
+                buttonElement.className = "bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-2.5 py-1 rounded transition shadow-sm";
             }, 1500);
         }
 
@@ -130,17 +142,18 @@
                 if (messages.length === 0) {
                     inboxList.innerHTML = `<p class="text-sm text-slate-500 text-center py-6">Belum ada email masuk untuk ${currentEmail}</p>`;
                 } else {
-                    messages.forEach((msg, index) => {
+                    messages.forEach((msg) => {
                         let item = document.createElement("div");
-                        item.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-md";
+                        item.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-md mb-2";
                         
-                        // Escape isi body agar aman dimasukkan ke fungsi salin
-                        let safeBody = msg.body.replace(/'/g, "\\'");
+                        // Encode subjek dan body agar aman dimasukkan ke parameter fungsi
+                        let encodedSubject = encodeURIComponent(msg.subject || "");
+                        let encodedBody = encodeURIComponent(msg.body || "");
 
                         item.innerHTML = `
                             <div class="flex justify-between items-start mb-1">
                                 <p class="font-bold text-pink-400 text-xs">Dari: ${msg.sender}</p>
-                                <button onclick="copyMessageContent('${safeBody}', this)" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-2.5 py-1 rounded transition shadow-sm">Salin Isi</button>
+                                <button onclick="copyVerificationCode('${encodedSubject}', '${encodedBody}', this)" class="bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-2.5 py-1 rounded transition shadow-sm">Salin Kode</button>
                             </div>
                             <p class="text-xs font-semibold text-yellow-300 mb-1">Subjek: ${msg.subject}</p>
                             <pre class="text-xs text-slate-300 bg-slate-950 p-2.5 rounded border border-slate-800 whitespace-pre-wrap font-sans my-1">${msg.body}</pre>
@@ -157,10 +170,7 @@
             }
         }
 
-        // Generate email default (tipe string) saat pertama kali halaman dibuka
         window.onload = () => generateEmail('string');
-
-        // Auto-refresh cek inbox setiap 10 detik
         setInterval(fetchInbox, 10000);
     </script>
 </body>
