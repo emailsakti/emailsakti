@@ -3,233 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Sakti - Multiple Domain</title>
-    <style>
-        body {
-            background-color: #0b0f19;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .card {
-            background-color: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 25px;
-            width: 420px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        }
-        h2 {
-            text-align: center;
-            background: linear-gradient(45deg, #ff758c, #ff7eb3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
-        .subtitle {
-            text-align: center;
-            font-size: 13px;
-            color: #8b949e;
-            margin-bottom: 20px;
-        }
-        label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #ff7eb3;
-            display: block;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-        .input-group, .select-group {
-            margin-bottom: 15px;
-        }
-        select, input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-        select:focus, input:focus {
-            border-color: #58a6ff;
-            outline: none;
-        }
-        .email-box {
-            display: flex;
-            gap: 8px;
-        }
-        button {
-            cursor: pointer;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 13px;
-            transition: 0.2s;
-        }
-        .btn-copy {
-            background-color: #238636;
-            color: white;
-            padding: 0 15px;
-        }
-        .btn-copy:hover { background-color: #2ea043; }
-        
-        .generators {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-        .btn-gen {
-            flex: 1;
-            padding: 9px;
-            color: white;
-        }
-        .btn-nama { background: linear-gradient(45deg, #8e44ad, #9b59b6); }
-        .btn-string { background: linear-gradient(45deg, #16a085, #1abc9c); }
-        .btn-custom { background: linear-gradient(45deg, #d35400, #e67e22); }
-        .btn-gen:hover { opacity: 0.9; }
-
-        .inbox-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .btn-refresh {
-            background-color: #1f6feb;
-            color: white;
-            padding: 5px 12px;
-            font-size: 12px;
-        }
-        .btn-refresh:hover { background-color: #388bfd; }
-
-        .inbox-content {
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            height: 120px;
-            padding: 10px;
-            font-size: 13px;
-            color: #8b949e;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-y: auto;
-        }
-    </style>
+    <title>Email Sakti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
-<div class="card">
-    <h2>EMAIL SAKTI</h2>
-    <div class="subtitle">Layanan Kotak Masuk Multi-Domain</div>
+    <div class="bg-slate-900 border border-slate-800 shadow-2xl shadow-purple-500/10 rounded-2xl p-6 w-full max-w-xl">
+        <!-- Judul Header -->
+        <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-400 mb-1 text-center tracking-wide">EMAIL SAKTI</h1>
+        <p class="text-xs text-slate-400 mb-6 text-center">Layanan kotak masuk multi-domain</p>
 
-    <!-- Pilihan Domain -->
-    <div class="select-group">
-        <label>Pilih Domain:</label>
-        <select id="domainSelect" onchange="updateEmailDisplay()">
-            <option value="caseyroom.biz.id">caseyroom.biz.id</option>
-            <option value="kaylaroom.biz.id">kaylaroom.biz.id</option>
-            <option value="natalieroom.biz.id">natalieroom.biz.id</option>
-            <option value="josjisbos.my.id">josjisbos.my.id</option>
-        </select>
-    </div>
+        <!-- Dropdown Pilihan Domain -->
+        <div class="mb-4">
+            <label class="block text-xs font-bold text-pink-400 uppercase mb-2 tracking-wider">Pilih Domain:</label>
+            <select id="domainSelect" onchange="changeDomain(this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-cyan-300 font-mono text-sm focus:outline-none focus:border-pink-500">
+                <option value="josjisbos.my.id">josjisbos.my.id</option>
+                <option value="caseyroom.biz.id">caseyroom.biz.id</option>
+                <option value="kaylaroom.biz.id">kaylaroom.biz.id</option>
+                <option value="natalieroom.biz.id">natalieroom.biz.id</option>
+            </select>
+        </div>
 
-    <div class="input-group">
-        <label>Alamat Email Anda:</label>
-        <div class="email-box">
-            <input type="text" id="emailInput" readonly value="budi997@caseyroom.biz.id">
-            <button class="btn-copy" onclick="copyEmail()">Salin</button>
+        <!-- Bagian Alamat Email -->
+        <div class="mb-6">
+            <label class="block text-xs font-bold text-pink-400 uppercase mb-2 tracking-wider">Alamat Email Anda:</label>
+            <div class="flex gap-2 mb-3">
+                <!-- Kolom Input Email (bisa diedit jika pakai mode custom) -->
+                <input type="text" id="targetEmail" readonly class="w-full bg-slate-950 border border-slate-700 rounded-lg px-4 py-2 text-cyan-300 font-mono text-sm focus:outline-none focus:border-pink-500">
+                <button onclick="copyEmail()" id="copyEmailBtn" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition shadow-lg shadow-blue-500/20 whitespace-nowrap">Salin</button>
+            </div>
+            
+            <!-- Tombol Pilihan Generator: Nama, String, & Custom -->
+            <div class="flex gap-2">
+                <button onclick="generateEmail('name')" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-2 rounded-lg text-sm transition shadow-lg shadow-purple-500/20">👤 Nama</button>
+                <button onclick="generateEmail('string')" class="flex-1 bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-white font-semibold py-2 rounded-lg text-sm transition shadow-lg shadow-cyan-500/20">🔣 String</button>
+                <button onclick="enableCustomEmail()" class="flex-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold py-2 rounded-lg text-sm transition shadow-lg shadow-amber-500/20">✏️ Custom</button>
+            </div>
+        </div>
+
+        <!-- Tombol Refresh & Status -->
+        <div class="flex justify-between items-center mb-4 border-t border-slate-800 pt-4">
+            <h2 class="text-md font-bold text-yellow-400">Kotak Masuk (Inbox)</h2>
+            <button onclick="fetchInbox()" id="refreshBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition shadow-md shadow-emerald-600/20">Cek Pesan Baru</button>
+        </div>
+
+        <!-- Daftar Pesan Masuk -->
+        <div id="inboxList" class="space-y-3 max-h-72 overflow-y-auto mb-2 border border-slate-800 rounded-lg p-3 bg-slate-950/50">
+            <p class="text-sm text-slate-500 text-center py-6">Belum ada email masuk...</p>
         </div>
     </div>
 
-    <div class="generators">
-        <button class="btn-gen btn-nama" onclick="generateEmail('nama')">👤 Nama</button>
-        <button class="btn-gen btn-string" onclick="generateEmail('string')">🔢 String</button>
-        <button class="btn-gen btn-custom" onclick="generateCustom()">✏️ Custom</button>
-    </div>
+    <!-- JavaScript Logika -->
+    <script>
+        const SUPABASE_URL = "https://leozcdtoagbxuhefypjh.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxlb3pjZHRvYWdieHVoZWZ5cGpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0NTI3OTUsImV4cCI6MjEwNzAyODc5NX0.W8Gm7H-lQ9CbcvhiZXjV6RK1uNbrKMRgrwDdtda5dgI";
 
-    <div class="inbox-header">
-        <label style="margin:0;">Kotak Masuk (Inbox)</label>
-        <button class="btn-refresh" onclick="checkInbox()">Cek Pesan Baru</button>
-    </div>
+        let DOMAIN = document.getElementById("domainSelect").value;
+        let currentEmail = "";
 
-    <div class="inbox-content" id="inboxBox">
-        Belum ada email masuk untuk <span id="currentEmailTarget">budi997@caseyroom.biz.id</span>
-    </div>
-</div>
+        const firstNames = ["budi", "siti", "joko", "dewi", "agus", "ani", "eko", "sri", "rizky", "putri", "bayu", "indah", "dimas", "fitri"];
 
-<script>
-    const firstNames = ['budi', 'siti', 'agus', 'dewi', 'eko', 'rina', 'joko', 'sri', 'andi', 'mega'];
-    
-    function getSelectedDomain() {
-        return document.getElementById('domainSelect').value;
-    }
+        // Fungsi untuk mengganti domain aktif dari dropdown
+        function changeDomain(selectedDomain) {
+            DOMAIN = selectedDomain;
+            const emailInput = document.getElementById("targetEmail");
+            
+            // Jika sedang mode custom input, jangan ubah otomatis
+            if (emailInput && !emailInput.readOnly) return;
 
-    function updateEmailDisplay() {
-        const domain = getSelectedDomain();
-        const emailField = document.getElementById('emailInput');
-        const currentPrefix = emailField.value.split('@')[0] || 'budi997';
-        const newEmail = currentPrefix + '@' + domain;
-        
-        emailField.value = newEmail;
-        document.getElementById('currentEmailTarget').innerText = newEmail;
-    }
-
-    function generateEmail(type) {
-        const domain = getSelectedDomain();
-        let prefix = '';
-
-        if (type === 'nama') {
-            const randomName = firstNames[Math.floor(Math.random() * firstNames.length)];
-            const randomNum = Math.floor(100 + Math.random() * 900);
-            prefix = randomName + randomNum;
-        } else if (type === 'string') {
-            prefix = 'user_' + Math.random().toString(36).substring(2, 8);
+            // Jika sudah ada email ter-generate, perbarui ekor domainnya secara otomatis
+            if (currentEmail) {
+                let prefix = currentEmail.split('@')[0];
+                currentEmail = `${prefix}@${DOMAIN}`;
+                emailInput.value = currentEmail;
+                fetchInbox();
+            }
         }
 
-        const fullEmail = prefix + '@' + domain;
-        document.getElementById('emailInput').value = fullEmail;
-        document.getElementById('currentEmailTarget').innerText = fullEmail;
-        document.getElementById('inboxBox').innerText = `Belum ada email masuk untuk ${fullEmail}`;
-    }
-
-    function generateCustom() {
-        const domain = getSelectedDomain();
-        const customName = prompt("Masukkan nama email custom (tanpa @domain):");
-        if (customName && customName.trim() !== "") {
-            const cleanName = customName.trim().replace(/[^a-zA-Z0-9._]/g, '');
-            const fullEmail = cleanName + '@' + domain;
-            document.getElementById('emailInput').value = fullEmail;
-            document.getElementById('currentEmailTarget').innerText = fullEmail;
-            document.getElementById('inboxBox').innerText = `Belum ada email masuk untuk ${fullEmail}`;
+        function generateRandomString(length) {
+            const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            let result = "";
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
         }
-    }
 
-    function copyEmail() {
-        const emailInput = document.getElementById('emailInput');
-        emailInput.select();
-        emailInput.setSelectionRange(0, 99999); // Untuk support HP/Mobile
-        navigator.clipboard.writeText(emailInput.value).then(() => {
-            alert('Email berhasil disalin: ' + emailInput.value);
-        }).catch(err => {
-            document.execCommand('copy');
-            alert('Email berhasil disalin: ' + emailInput.value);
-        });
-    }
+        // Generator tipe: 'name' atau 'string'
+        function generateEmail(type) {
+            const emailInput = document.getElementById("targetEmail");
+            emailInput.readOnly = true;
 
-    function checkInbox() {
-        const email = document.getElementById('emailInput').value;
-        alert('Memeriksa pesan masuk untuk: ' + email + '\n(Belum ada pesan baru)');
-    }
-</script>
+            let prefix = "";
+            if (type === 'name') {
+                const randomName = firstNames[Math.floor(Math.random() * firstNames.length)];
+                const randomNum = Math.floor(Math.random() * 900) + 100;
+                prefix = `${randomName}${randomNum}`;
+            } else {
+                prefix = generateRandomString(8);
+            }
 
+            currentEmail = `${prefix}@${DOMAIN}`;
+            emailInput.value = currentEmail;
+            document.getElementById("inboxList").innerHTML = `<p class="text-sm text-slate-500 text-center py-6">Belum ada email masuk...</p>`;
+            
+            fetchInbox();
+        }
+
+        // Mengaktifkan mode input custom untuk memasukkan email lama
+        function enableCustomEmail() {
+            const emailInput = document.getElementById("targetEmail");
+            emailInput.readOnly = false;
+            emailInput.focus();
+            emailInput.select();
+            
+            // Berikan pemberitahuan kecil di kotak inbox
+            document.getElementById("inboxList").innerHTML = `
+                <div class="text-center py-4">
+                    <p class="text-xs text-amber-400 mb-2 font-semibold">Silakan ketik email lama Anda di atas, lalu klik tombol "Cek Pesan Baru"</p>
+                </div>
+            `;
+
+            // Ketika pengguna mengetik, update nilai currentEmail secara real-time
+            emailInput.oninput = function() {
+                currentEmail = emailInput.value.trim();
+            };
+        }
+
+        // Menyalin email tanpa Pop-up alert
+        function copyEmail() {
+            const emailInput = document.getElementById("targetEmail");
+            if (!emailInput.value) return;
+
+            navigator.clipboard.writeText(emailInput.value);
+            
+            const btn = document.getElementById("copyEmailBtn");
+            const originalText = btn.innerText;
+            btn.innerText = "Tersalin!";
+            btn.classList.replace("from-blue-600", "from-emerald-600");
+            btn.classList.replace("to-indigo-600", "to-teal-600");
+
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.classList.replace("from-emerald-600", "from-blue-600");
+                btn.classList.replace("to-teal-600", "to-indigo-600");
+            }, 1500);
+        }
+
+        // Fungsi khusus menyalin kode verifikasi
+        function copyVerificationCode(subject, body, buttonElement) {
+            let combinedText = subject + " " + body;
+            let match = combinedText.match(/\b\d{4,8}\b/);
+            let codeToCopy = match ? match[0] : "";
+
+            if (!codeToCopy) {
+                codeToCopy = body.trim();
+            }
+
+            navigator.clipboard.writeText(codeToCopy);
+            
+            const originalText = buttonElement.innerText;
+            buttonElement.innerText = "Kode Tersalin!";
+            buttonElement.className = "bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded transition";
+
+            setTimeout(() => {
+                buttonElement.innerText = originalText;
+                buttonElement.className = "bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-2.5 py-1 rounded transition shadow-sm";
+            }, 1500);
+        }
+
+        // Mengambil pesan dari Supabase
+        async function fetchInbox() {
+            const emailInput = document.getElementById("targetEmail");
+            currentEmail = emailInput.value.trim();
+
+            if (!currentEmail) {
+                alert("Masukkan alamat email terlebih dahulu!");
+                return;
+            }
+
+            const btn = document.getElementById("refreshBtn");
+            btn.innerText = "Memeriksa...";
+
+            let inboxList = document.getElementById("inboxList");
+
+            try {
+                let response = await fetch(`${SUPABASE_URL}/rest/v1/emails?recipient=eq.${currentEmail}&order=created_at.desc`, {
+                    headers: {
+                        "apikey": SUPABASE_ANON_KEY,
+                        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                let messages = await response.json();
+
+                inboxList.innerHTML = "";
+
+                if (messages.length === 0) {
+                    inboxList.innerHTML = `<p class="text-sm text-slate-500 text-center py-6">Belum ada email masuk untuk ${currentEmail}</p>`;
+                } else {
+                    messages.forEach((msg) => {
+                        let item = document.createElement("div");
+                        item.className = "bg-slate-900 border border-slate-800 p-3 rounded-xl shadow-md mb-2";
+                        
+                        let encodedSubject = encodeURIComponent(msg.subject || "");
+                        let encodedBody = encodeURIComponent(msg.body || "");
+
+                        item.innerHTML = `
+                            <div class="flex justify-between items-start mb-1">
+                                <p class="font-bold text-pink-400 text-xs">Dari: ${msg.sender}</p>
+                                <button onclick="copyVerificationCode('${encodedSubject}', '${encodedBody}', this)" class="bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold px-2.5 py-1 rounded transition shadow-sm">Salin Kode</button>
+                            </div>
+                            <p class="text-xs font-semibold text-yellow-300 mb-1">Subjek: ${msg.subject}</p>
+                            <pre class="text-xs text-slate-300 bg-slate-950 p-2.5 rounded border border-slate-800 whitespace-pre-wrap font-sans my-1">${msg.body}</pre>
+                            <p class="text-[10px] text-slate-500 text-right mt-1">${new Date(msg.created_at).toLocaleString()}</p>
+                        `;
+                        inboxList.appendChild(item);
+                    });
+                }
+            } catch (error) {
+                console.error("Gagal mengambil data:", error);
+                inboxList.innerHTML = `<p class="text-sm text-red-400 text-center py-6">Gagal memuat pesan.</p>`;
+            } finally {
+                btn.innerText = "Cek Pesan Baru";
+            }
+        }
+
+        window.onload = () => generateEmail('string');
+        setInterval(fetchInbox, 10000);
+    </script>
 </body>
 </html>
