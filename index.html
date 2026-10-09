@@ -167,7 +167,6 @@
 </div>
 
 <script>
-    // Daftar nama acak untuk generator
     const firstNames = ['budi', 'siti', 'agus', 'dewi', 'eko', 'rina', 'joko', 'sri', 'andi', 'mega'];
     
     function getSelectedDomain() {
@@ -176,10 +175,11 @@
 
     function updateEmailDisplay() {
         const domain = getSelectedDomain();
-        const currentPrefix = document.getElementById('emailInput').value.split('@')[0];
+        const emailField = document.getElementById('emailInput');
+        const currentPrefix = emailField.value.split('@')[0] || 'budi997';
         const newEmail = currentPrefix + '@' + domain;
         
-        document.getElementById('emailInput').value = newEmail;
+        emailField.value = newEmail;
         document.getElementById('currentEmailTarget').innerText = newEmail;
     }
 
@@ -192,7 +192,7 @@
             const randomNum = Math.floor(100 + Math.random() * 900);
             prefix = randomName + randomNum;
         } else if (type === 'string') {
-            prefix = 'user_' + Math.random().toString(36.substring(2, 8));
+            prefix = 'user_' + Math.random().toString(36).substring(2, 8);
         }
 
         const fullEmail = prefix + '@' + domain;
@@ -216,8 +216,13 @@
     function copyEmail() {
         const emailInput = document.getElementById('emailInput');
         emailInput.select();
-        document.execCommand('copy');
-        alert('Email berhasil disalin: ' + emailInput.value);
+        emailInput.setSelectionRange(0, 99999); // Untuk support HP/Mobile
+        navigator.clipboard.writeText(emailInput.value).then(() => {
+            alert('Email berhasil disalin: ' + emailInput.value);
+        }).catch(err => {
+            document.execCommand('copy');
+            alert('Email berhasil disalin: ' + emailInput.value);
+        });
     }
 
     function checkInbox() {
